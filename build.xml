@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="simpledb" default="dist" basedir=".">
     <property name="src" location="src"/>
+    <property name="srcdir" location="${src}/java"/>
     <property name="testd" location="test"/>
 
     <property name="build" location="bin"/>

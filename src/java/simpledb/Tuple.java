@@ -8,11 +8,14 @@ import java.util.Iterator;
  * Tuple maintains information about the contents of a tuple. Tuples have a
  * specified schema specified by a TupleDesc object and contain Field objects
  * with the data for each field.
+ * 
  */
 public class Tuple implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private TupleDesc td;
+    private RecordId recordId;
+    private Field[] fs;
     /**
      * Create a new tuple with the specified schema (type).
      *
@@ -21,15 +24,15 @@ public class Tuple implements Serializable {
      *            instance with at least one field.
      */
     public Tuple(TupleDesc td) {
-        // some code goes here
+        this.td = td;
+        fs = new Field[td.numFields()];
     }
 
     /**
      * @return The TupleDesc representing the schema of this tuple.
      */
     public TupleDesc getTupleDesc() {
-        // some code goes here
-        return null;
+        return td;
     }
 
     /**
@@ -37,8 +40,7 @@ public class Tuple implements Serializable {
      *         be null.
      */
     public RecordId getRecordId() {
-        // some code goes here
-        return null;
+        return recordId;
     }
 
     /**
@@ -48,7 +50,7 @@ public class Tuple implements Serializable {
      *            the new RecordId for this tuple.
      */
     public void setRecordId(RecordId rid) {
-        // some code goes here
+        recordId = rid;
     }
 
     /**
@@ -60,7 +62,7 @@ public class Tuple implements Serializable {
      *            new value for the field.
      */
     public void setField(int i, Field f) {
-        // some code goes here
+        fs[i] = f;
     }
 
     /**
@@ -70,8 +72,7 @@ public class Tuple implements Serializable {
      *            field index to return. Must be a valid index.
      */
     public Field getField(int i) {
-        // some code goes here
-        return null;
+        return fs[i];
     }
 
     /**
@@ -83,25 +84,26 @@ public class Tuple implements Serializable {
      * where \t is any whitespace (except a newline)
      */
     public String toString() {
-        // some code goes here
-        throw new UnsupportedOperationException("Implement this");
+    	StringBuilder sb =  new StringBuilder();
+        for(int i = 0; i < td.numFields() - 1; ++i){
+            sb.append(fs[i].toString() + "\t");
+        }
+        sb.append(fs[td.numFields() - 1].toString() + "\n");
+        return sb.toString();
     }
 
     /**
      * @return
      *        An iterator which iterates over all the fields of this tuple
      * */
-    public Iterator<Field> fields()
-    {
-        // some code goes here
-        return null;
+    public Iterator<Field> fields() {
+        return (Iterator<Field>) Arrays.asList(fs).iterator();
     }
 
     /**
      * reset the TupleDesc of this tuple (only affecting the TupleDesc)
      * */
-    public void resetTupleDesc(TupleDesc td)
-    {
-        // some code goes here
+    public void resetTupleDesc(TupleDesc td) {
+        this.td = td;
     }
 }

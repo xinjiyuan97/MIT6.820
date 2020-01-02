@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * BufferPool manages the reading and writing of pages into memory from
  * disk. Access methods call into it to retrieve pages, and it fetches
  * pages from the appropriate location.
+ * 这一部分用于管理从磁盘读写数据。
  * <p>
  * The BufferPool is also responsible for locking;  when a transaction fetches
  * a page, BufferPool checks that the transaction has the appropriate
@@ -18,9 +19,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BufferPool {
     /** Bytes per page, including header. */
     private static final int DEFAULT_PAGE_SIZE = 4096;
-
+    private ConcurrentHashMap<Integer, Page> buffer;
     private static int pageSize = DEFAULT_PAGE_SIZE;
-    
+    private int numPages;
     /** Default number of pages passed to the constructor. This is used by
     other classes. BufferPool should use the numPages argument to the
     constructor instead. */
@@ -32,11 +33,12 @@ public class BufferPool {
      * @param numPages maximum number of pages in this buffer pool.
      */
     public BufferPool(int numPages) {
-        // some code goes here
+        buffer = new ConcurrentHashMap<Integer, Page>();
+        this.numPages = numPages;
     }
     
     public static int getPageSize() {
-      return pageSize;
+        return pageSize;
     }
     
     // THIS FUNCTION SHOULD ONLY BE USED FOR TESTING!!
@@ -66,8 +68,15 @@ public class BufferPool {
      */
     public  Page getPage(TransactionId tid, PageId pid, Permissions perm)
         throws TransactionAbortedException, DbException {
-        // some code goes here
-        return null;
+        Page page = buffer.get(pid.hashCode());
+        if (page != null)
+            return page;
+        // if (buffer.size() == numPages - 1)
+        //     throw DbException();
+        DbFile file = Database.getCatalog().getDatabaseFile(pid.getTableId());
+        page = file.readPage(pid);
+        buffer.put(pid.hashCode(), page);
+        return page;
     }
 
     /**
